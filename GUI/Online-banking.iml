@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
-  <component name="AdditionalModuleElements">
-    <content url="jar://$MODULE_DIR$/../../../../Загрузки/postgresql-42.6.0.jar!/" />
-  </component>
-</module>

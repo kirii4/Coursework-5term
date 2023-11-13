@@ -1,7 +1,6 @@
 package ermakov.onlinebanking.view.Authorization;
 
 import ermakov.onlinebanking.controller.Controller;
-import ermakov.onlinebanking.model.client.Client;
 
 import javax.swing.*;
 

@@ -22,8 +22,6 @@ public class UsersForm extends JFrame{
     private JComboBox from_cb;
     private JTable tableTicket;
     private JTable tableSchedule;
-//    private static String[][] data;
-//    private static String[][] dataTicket;
 
     public UsersForm() {
         setContentPane(contentPane);
@@ -38,14 +36,6 @@ public class UsersForm extends JFrame{
         buttonExit.setActionCommand("exitUser");
         buttonExit.addActionListener(Controller.getInstance());
     }
-
-//    public static void setData(String[][] data1) {
-//        data = data1;
-//    }
-//
-//    public static void setDataTicket(String[][] dataTicket) {
-//        UsersForm.dataTicket = dataTicket;
-//    }
 
     public JTextField getSecondName_tf() {
         return secondName_tf;
@@ -86,38 +76,4 @@ public class UsersForm extends JFrame{
     public JTable getTableSchedule() {
         return tableSchedule;
     }
-
-    //    private void createUIComponents() {
-//        String[] columnNames = {
-//                "Рейс",
-//                "Откуда",
-//                "Куда",
-//                "Самолет",
-//                "Отправление",
-//                "Прибытие",
-//                "В самолете(часы)",
-//                "Дата",
-//                "Свободных мест",
-//                "Класс",
-//                "Стоимость"
-//        };
-//
-//        JTable table = new JTable(data, columnNames);
-//        scrollPane = new JScrollPane(table);
-//
-//        String[] columnNamesTicket = {
-//                "Рейс",
-//                "Номер билета",
-//                "Откуда",
-//                "Куда",
-//                "Время",
-//                "Дата",
-//                "Пассажир",
-//                "Класс",
-//                "Стоимость"
-//        };
-//
-//        JTable tableTicket = new JTable(dataTicket, columnNamesTicket);
-//        scrollPaneTicket = new JScrollPane(tableTicket);
-//    }
 }

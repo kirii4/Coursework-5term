@@ -8,7 +8,6 @@ import ermakov.onlinebanking.view.FormCasher.FormCasher;
 import ermakov.onlinebanking.view.Registration.RegistrationUsers;
 import ermakov.onlinebanking.view.UsersForm.UsersForm;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -57,6 +56,7 @@ public class Controller implements ActionListener {
         this.objForm = obj;
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Вход")) {
             this.autorization();
@@ -169,8 +169,9 @@ public class Controller implements ActionListener {
                     if (status.equals("casher")) {
                         this.objEnterDialog.setVisible(false);
                         FormCasher formCasher = new FormCasher();
-                        this.client.sendMessage("getNumberOfTicket");
-                        int numberOfTicket = (Integer)this.client.readObject();
+                        //this.client.sendMessage("getNumberOfTicket");
+                        //int numberOfTicket = (Integer)this.client.readObject();
+                        int numberOfTicket = 0;
                         formCasher.getNumberTicket_tf().setText("" + numberOfTicket);
                         formCasher.getNumberTicket_tf().setEnabled(false);
                         formCasher.setTitle("Меню кассира");
@@ -186,9 +187,10 @@ public class Controller implements ActionListener {
                     if (status.equals("user")) {
                         this.objEnterDialog.setVisible(false);
                         UsersForm usersForm = new UsersForm();
-                        this.client.sendMessage("getInfAboutPassenger");
-                        this.client.sendObject(user);
-                        User infUser = (User)this.client.readObject();
+                        //this.client.sendMessage("getInfAboutPassenger");
+                        //this.client.sendObject(user);
+                        //User infUser = (User)this.client.readObject();
+                        User infUser = new User();
                         usersForm.getName_tf().setText(infUser.getName());
                         usersForm.getSecondName_tf().setText(infUser.getSecondName());
                         usersForm.getPatronymic_tf().setText(infUser.getPatronymic());
