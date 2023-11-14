@@ -2,6 +2,7 @@ package ermakov.onlinebanking.server;
 
 import ermakov.onlinebanking.database.SQLFactory;
 import ermakov.onlinebanking.model.User;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,7 +30,7 @@ public class Worker implements Runnable {
                         User user = (User)sois.readObject();
                         SQLFactory sqlFactory = new SQLFactory();
                         String status = sqlFactory.getUsers().findUser(user);
-                        if (status == "")
+                        if (status == "" || sqlFactory.getUsers().isEmailExists(user.getEmail()))
                             soos.writeObject("error");
                         else {
                             soos.writeObject("ok");
@@ -38,12 +39,9 @@ public class Worker implements Runnable {
                     }break;
                     case "registrationUser":{
                         System.out.println("Запрос к БД на проверку пользователя(таблица User), клиент: " + clientSocket.getInetAddress().toString());
-                        System.out.println(sois.readObject());
                         User user = (User)sois.readObject();
-
                         SQLFactory sqlFactory = new SQLFactory();
-
-                        if (sqlFactory.getUsers().findUser(user).equals("")) {
+                        if (sqlFactory.getUsers().findUser(user).equals("") || sqlFactory.getUsers().isEmailExists(user.getEmail())) {
                             soos.writeObject("OK");
                             sqlFactory.getUsers().insert(user);
                         }

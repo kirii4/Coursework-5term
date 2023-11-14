@@ -8,7 +8,7 @@ public class User implements Serializable {
     private String login;
     private String password;
     private String status;
-    private String role;
+    private String email;
     private String name;
     private String secondName;
     private String patronymic;
@@ -91,12 +91,12 @@ public class User implements Serializable {
         this.passportNumber = passportNumber;
     }
 
-    public String getRole() {
-        return this.role;
+    public String getEmail() {
+        return this.email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean equals(Object o) {
@@ -106,15 +106,15 @@ public class User implements Serializable {
             return false;
         } else {
             User user = (User)o;
-            return this.getIdUser() == user.getIdUser() && this.getPassportNumber() == user.getPassportNumber() && Objects.equals(this.getLogin(), user.getLogin()) && Objects.equals(this.getPassword(), user.getPassword()) && Objects.equals(this.getStatus(), user.getStatus()) && Objects.equals(this.getRole(), user.getRole()) && Objects.equals(this.getName(), user.getName()) && Objects.equals(this.getSecondName(), user.getSecondName()) && Objects.equals(this.getPatronymic(), user.getPatronymic()) && Objects.equals(this.getPassportSeries(), user.getPassportSeries());
+            return this.getIdUser() == user.getIdUser() && this.getPassportNumber() == user.getPassportNumber() && Objects.equals(this.getLogin(), user.getLogin()) && Objects.equals(this.getPassword(), user.getPassword()) && Objects.equals(this.getStatus(), user.getStatus()) && Objects.equals(this.getEmail(), user.getEmail()) && Objects.equals(this.getName(), user.getName()) && Objects.equals(this.getSecondName(), user.getSecondName()) && Objects.equals(this.getPatronymic(), user.getPatronymic()) && Objects.equals(this.getPassportSeries(), user.getPassportSeries());
         }
     }
 
     public int hashCode() {
-        return Objects.hash(new Object[]{this.getIdUser(), this.getLogin(), this.getPassword(), this.getStatus(), this.getRole(), this.getName(), this.getSecondName(), this.getPatronymic(), this.getPassportSeries(), this.getPassportNumber()});
+        return Objects.hash(new Object[]{this.getIdUser(), this.getLogin(), this.getPassword(), this.getStatus(), this.getEmail(), this.getName(), this.getSecondName(), this.getPatronymic(), this.getPassportSeries(), this.getPassportNumber()});
     }
 
     public String toString() {
-        return "User{idUser=" + this.idUser + ", login='" + this.login + "', password='" + this.password + "', status='" + this.status + "', role='" + this.role + "', name='" + this.name + "', secondName='" + this.secondName + "', patronymic='" + this.patronymic + "', passportSeries='" + this.passportSeries + "', passportNumber=" + this.passportNumber + "}";
+        return "User{idUser=" + this.idUser + ", login='" + this.login + "', password='" + this.password + "', status='" + this.status + "', email='" + this.email + "', name='" + this.name + "', secondName='" + this.secondName + "', patronymic='" + this.patronymic + "', passportSeries='" + this.passportSeries + "', passportNumber=" + this.passportNumber + "}";
     }
 }

@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="617" height="459"/>
+      <xy x="20" y="20" width="617" height="496"/>
     </constraints>
     <properties>
       <preferredSize width="750" height="440"/>
@@ -27,7 +27,7 @@
             <children>
               <grid id="eb50f" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title="Расписание"/>
+                  <tabbedpane title="Платежи"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -133,7 +133,7 @@
               <grid id="2268e" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="20" left="20" bottom="20" right="20"/>
                 <constraints>
-                  <tabbedpane title="Продажа билетов"/>
+                  <tabbedpane title="Совершение платежа"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -444,7 +444,7 @@
               </grid>
               <grid id="c1fc" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title="Возврат билетов"/>
+                  <tabbedpane title="Отмена платежа"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -462,7 +462,7 @@
                           <gridbag weightx="0.0" weighty="0.0"/>
                         </constraints>
                         <properties>
-                          <text value="Номер билета:"/>
+                          <text value="Название платежа:"/>
                         </properties>
                       </component>
                       <hspacer id="6f1a">

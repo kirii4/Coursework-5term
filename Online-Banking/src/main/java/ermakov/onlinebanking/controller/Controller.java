@@ -3,6 +3,7 @@ package ermakov.onlinebanking.controller;
 import ermakov.onlinebanking.model.User;
 import ermakov.onlinebanking.model.client.Client;
 import ermakov.onlinebanking.view.Authorization.EnterDialog;
+import ermakov.onlinebanking.view.ForgotPassword.ForgotPassword;
 import ermakov.onlinebanking.view.Form.Form;
 import ermakov.onlinebanking.view.FormCasher.FormCasher;
 import ermakov.onlinebanking.view.Registration.RegistrationUsers;
@@ -11,6 +12,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -23,6 +26,7 @@ public class Controller implements ActionListener {
     private UsersForm objUsersForm;
     private Form objForm;
     private FormCasher objFormCasher;
+    private ForgotPassword objForgotPassword;
     private final Client client = new Client("127.0.0.2", "5000");
 
     private Controller() {
@@ -55,6 +59,9 @@ public class Controller implements ActionListener {
     public void initialize(Form obj) {
         this.objForm = obj;
     }
+    public void initialize(ForgotPassword obj) {
+        this.objForgotPassword = obj;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -79,25 +86,49 @@ public class Controller implements ActionListener {
         }
 
         if (e.getActionCommand().equals("registrationUsers")) {
-            if (!this.objRegistrarionUsers.getName_tf().getText().equals("") && !this.objRegistrarionUsers.getSecondName_tf().getText().equals("") && !this.objRegistrarionUsers.getPatronymic_tf().getText().equals("") && !this.objRegistrarionUsers.getLogin_tf().getText().equals("") && !this.objRegistrarionUsers.getPassword_tf().getText().equals("") && !this.objRegistrarionUsers.getPassportSeries_tf().getText().equals("") && !this.objRegistrarionUsers.getPassportNumver_tf().getText().equals("")) {
+            if (!this.objRegistrarionUsers.getName_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getSecondName_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getPatronymic_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getLogin_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getPassword_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getPassportSeries_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getPassportNumber_tf().getText().isEmpty() &&
+                    !this.objRegistrarionUsers.getTextEmail().getText().isEmpty()) {
                 User user = new User();
                 user.setName(this.objRegistrarionUsers.getName_tf().getText());
                 user.setSecondName(this.objRegistrarionUsers.getSecondName_tf().getText());
                 user.setPatronymic(this.objRegistrarionUsers.getPatronymic_tf().getText());
                 user.setPassportSeries(this.objRegistrarionUsers.getPassportSeries_tf().getText());
-                this.objRegistrarionUsers.getPassportNumver_tf().setBorder(BorderFactory.createLineBorder(Color.gray));
+                this.objRegistrarionUsers.getPassportNumber_tf().setBorder(BorderFactory.createLineBorder(Color.gray));
                 int error = 0;
 
                 try {
-                    user.setPassportNumber(Integer.parseInt(this.objRegistrarionUsers.getPassportNumver_tf().getText()));
+                    user.setPassportNumber(Integer.parseInt(this.objRegistrarionUsers.getPassportNumber_tf().getText()));
                 } catch (NumberFormatException var9) {
-                    this.objRegistrarionUsers.getPassportNumver_tf().setBorder(BorderFactory.createLineBorder(Color.red));
+                    this.objRegistrarionUsers.getPassportNumber_tf().setBorder(BorderFactory.createLineBorder(Color.red));
                     JOptionPane.showMessageDialog(this.objRegistrarionUsers, "Поле должно быть целым числом", "Ошибка ввода", 0);
+                    ++error;
+                }
+
+                try {
+                    String email = this.objRegistrarionUsers.getTextEmail().getText();
+                    String emailRegex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" +
+                            "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+                    Pattern pattern = Pattern.compile(emailRegex);
+                    Matcher matcher = pattern.matcher(email);
+                    if (!matcher.matches()) {
+                        throw new IllegalArgumentException("Некорректный адрес электронной почты");
+                    }
+                } catch (IllegalArgumentException var10) {
+                    this.objRegistrarionUsers.getTextEmail().setBorder(BorderFactory.createLineBorder(Color.red));
+                    JOptionPane.showMessageDialog(this.objRegistrarionUsers, "Некорректный адрес электронной почты", "Ошибка ввода", 0);
                     ++error;
                 }
 
                 user.setLogin(this.objRegistrarionUsers.getLogin_tf().getText());
                 user.setPassword(this.objRegistrarionUsers.getPassword_tf().getText());
+                user.setEmail(this.objRegistrarionUsers.getTextEmail().getText());
+
                 user.setStatus("user");
                 if (error == 0) {
                     this.client.sendMessage("registrationUser");

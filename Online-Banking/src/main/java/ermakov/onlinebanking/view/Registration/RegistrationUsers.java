@@ -12,9 +12,10 @@ public class RegistrationUsers extends JFrame{
     private JTextField login_tf;
     private JTextField password_tf;
     private JTextField passportSeries_tf;
-    private JTextField passportNumver_tf;
+    private JTextField passportNumber_tf;
     private JButton buttonRegistration;
     private JButton buttonCanselRegistration;
+    private JTextField textEmail;
 
     public RegistrationUsers(){
         setContentPane(contentPane);
@@ -24,7 +25,7 @@ public class RegistrationUsers extends JFrame{
         Controller.getInstance().initialize(this);
         buttonRegistration.setActionCommand("registrationUsers");
         buttonRegistration.addActionListener(Controller.getInstance());
-        buttonCanselRegistration.setActionCommand("backToAutorization");
+        buttonCanselRegistration.setActionCommand("backToAuthorization");
         buttonCanselRegistration.addActionListener(Controller.getInstance());
     }
 
@@ -52,7 +53,10 @@ public class RegistrationUsers extends JFrame{
         return password_tf;
     }
 
-    public JTextField getPassportNumver_tf() {
-        return passportNumver_tf;
+    public JTextField getPassportNumber_tf() {
+        return passportNumber_tf;
+    }
+    public JTextField getTextEmail() {
+        return textEmail;
     }
 }

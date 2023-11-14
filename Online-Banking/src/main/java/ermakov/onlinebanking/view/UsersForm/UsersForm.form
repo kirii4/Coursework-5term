@@ -24,7 +24,7 @@
             <children>
               <grid id="bd437" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title="Расписание"/>
+                  <tabbedpane title="Платежи"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -127,7 +127,7 @@
               </grid>
               <grid id="297ac" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title="Заказ билетов"/>
+                  <tabbedpane title="Оплата"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>

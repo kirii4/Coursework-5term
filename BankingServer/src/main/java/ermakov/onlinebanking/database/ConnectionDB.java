@@ -76,6 +76,8 @@ public class ConnectionDB {
         } catch (SQLException var2) {
             System.out.println(var2.getMessage());
         }
-
+    }
+    public Connection getConnection() {
+        return connect;
     }
 }

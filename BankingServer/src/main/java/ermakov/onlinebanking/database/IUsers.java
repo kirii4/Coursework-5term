@@ -8,4 +8,6 @@ public interface IUsers {
     void insert(User var1);
 
     User selectUsers(User var1);
+
+    boolean isEmailExists(String email);
 }
