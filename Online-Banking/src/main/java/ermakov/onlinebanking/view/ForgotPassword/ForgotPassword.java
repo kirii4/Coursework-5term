@@ -3,21 +3,27 @@ package ermakov.onlinebanking.view.ForgotPassword;
 import ermakov.onlinebanking.controller.Controller;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class ForgotPassword extends JDialog {
     private JPanel contentPane;
     private JButton buttonSend;
     private JButton buttonCancel;
     private JTextField textEmail;
-    private JPasswordField passwordField1;
-    private JLabel textCode;
-    private JLabel EmailLabel;
+    private JLabel textLabel;
+    private JButton buttonCheckCode;
+    private JTextField textCode;
 
-    public JTextField getTextLogin(){
+    public JTextField getTextEmail(){
         return textEmail;
     }
-    public JPasswordField getPasswordField1(){
-        return passwordField1;
+
+    public JLabel getTextLabel(){
+        return textLabel;
+    }
+
+    public JTextField getTextCode(){
+        return textCode;
     }
 
     public ForgotPassword() {
@@ -27,14 +33,19 @@ public class ForgotPassword extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonSend);
 
+        setMinimumSize(new Dimension(450, 200));
+        setMaximumSize(new Dimension(450, 400));
+
         Controller.getInstance().initialize(this);
+        buttonSend.setActionCommand("sendForgotPasswordCode");
         buttonSend.addActionListener(Controller.getInstance());
-        buttonCancel.setActionCommand("showForgotPassword");
+        buttonCheckCode.setActionCommand("checkCode");
+        buttonCheckCode.addActionListener(Controller.getInstance());
+        buttonCancel.setActionCommand("backToAutorizationFromForgotPassword");
         buttonCancel.addActionListener(Controller.getInstance());
     }
     public void exit(){
         setDefaultCloseOperation(ForgotPassword.HIDE_ON_CLOSE);
     }
-
 
 }

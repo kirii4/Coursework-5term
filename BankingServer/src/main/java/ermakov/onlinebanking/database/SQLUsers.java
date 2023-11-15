@@ -87,5 +87,20 @@ public class SQLUsers implements IUsers {
 
         return count > 0;
     }
+
+    public boolean updatePassword(String email, String password){
+        String query = "UPDATE users SET password = ? WHERE email = ?";
+        try (PreparedStatement preparedStatement = dbConnection.getConnection().prepareStatement(query)) {
+            preparedStatement.setString(1, password);
+            preparedStatement.setString(2, email);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
 

@@ -1,6 +1,7 @@
 package ermakov.onlinebanking.server;
 
 import ermakov.onlinebanking.database.SQLFactory;
+import ermakov.onlinebanking.gmail.GMailer;
 import ermakov.onlinebanking.model.User;
 import org.w3c.dom.ls.LSOutput;
 
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import static ermakov.onlinebanking.gmail.GMailer.*;
 
 public class Worker implements Runnable {
     protected Socket clientSocket = null;
@@ -22,6 +25,8 @@ public class Worker implements Runnable {
         try {
             this.sois = new ObjectInputStream(this.clientSocket.getInputStream());
             this.soos = new ObjectOutputStream(this.clientSocket.getOutputStream());
+            String email = new String();
+
             System.out.println("Client " + this.clientSocket.getInetAddress().toString() + " connected.");
 
             while(true) {
@@ -54,13 +59,45 @@ public class Worker implements Runnable {
                         this.soos.close();
                         this.sois.close();
                         System.out.println("Client " + this.clientSocket.getInetAddress().toString() + "disconnected.");
-                    }
+                    }break;
+                    case "forgotPassword": {
+                        System.out.println("Запрос к БД на проверку почты пользователя(таблица User), клиент: " + clientSocket.getInetAddress().toString());
+                        email = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getUsers().isEmailExists(email)){
+                            GMailer gMailer = new GMailer();
+                            gMailer.sendMessage(email);
+                            soos.writeObject("ok");
+                        } else {
+                            soos.writeObject("This email will not find");
+                        }
+                    }break;
+                    case "forgotPasswordCode": {
+                        String sendCode = (String) sois.readObject();
+                        String _code = String.valueOf(GMailer.getCode());
+                        if (_code.equals(sendCode)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("This code is wrong");
+                        }
+                    }break;
+                    case "resetPassword":{
+                        String password = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getUsers().updatePassword(email, password)){
+                            soos.writeObject("ok");
+                        } else {
+                            soos.writeObject("Error");
+                        }
+                    }break;
                 }
             }
         } catch (IOException var7) {
             System.out.println("Client disconnected (" + this.clientSocket.getInetAddress().toString() + ").");
         } catch (ClassNotFoundException var8) {
             var8.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
     }

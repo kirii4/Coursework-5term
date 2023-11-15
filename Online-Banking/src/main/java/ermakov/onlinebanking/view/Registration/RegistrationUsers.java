@@ -25,7 +25,7 @@ public class RegistrationUsers extends JFrame{
         Controller.getInstance().initialize(this);
         buttonRegistration.setActionCommand("registrationUsers");
         buttonRegistration.addActionListener(Controller.getInstance());
-        buttonCanselRegistration.setActionCommand("backToAuthorization");
+        buttonCanselRegistration.setActionCommand("backToAutorizationFromRegistration");
         buttonCanselRegistration.addActionListener(Controller.getInstance());
     }
 

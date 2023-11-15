@@ -4,12 +4,13 @@ import ermakov.onlinebanking.controller.Controller;
 
 import javax.swing.*;
 
-public class EnterDialog extends JDialog {
+public class Authorization extends JDialog {
     private JPanel contentPane;
     private JButton buttonEnter;
     private JButton buttonRegistration;
     private JTextField textLogin;
     private JPasswordField passwordField1;
+    private JButton buttonForgotPassword;
 
     public JTextField getTextLogin(){
         return textLogin;
@@ -18,7 +19,7 @@ public class EnterDialog extends JDialog {
         return passwordField1;
     }
 
-    public EnterDialog() {
+    public Authorization() {
         setContentPane(contentPane);
         setUndecorated(true);
         getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
@@ -29,9 +30,11 @@ public class EnterDialog extends JDialog {
         buttonEnter.addActionListener(Controller.getInstance());
         buttonRegistration.setActionCommand("showRegistrationFrame");
         buttonRegistration.addActionListener(Controller.getInstance());
+        buttonForgotPassword.setActionCommand("showForgotPasswordFrame");
+        buttonForgotPassword.addActionListener(Controller.getInstance());
     }
     public void exit(){
-        setDefaultCloseOperation(EnterDialog.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(Authorization.HIDE_ON_CLOSE);
     }
 
 

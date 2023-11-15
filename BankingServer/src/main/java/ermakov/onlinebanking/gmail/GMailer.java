@@ -29,10 +29,8 @@ import static com.google.api.services.gmail.GmailScopes.GMAIL_SEND;
 import static javax.mail.Message.RecipientType.TO;
 
 public class GMailer {
-
-    private final String TEST_EMAIL = "online.banking.applcation@gmail.com";
     private final Gmail service;
-
+    private static int code = 0;
     public GMailer() throws Exception {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
@@ -41,10 +39,14 @@ public class GMailer {
                 .build();
     }
 
+    public static int getCode(){
+        return code;
+    }
+
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory)
             throws IOException {
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory,
-                new InputStreamReader(GMailer.class.getResourceAsStream("/client_secret_98348400237-vpb97uvtnrfc3n3u8fg7td71i9na788p.apps.googleusercontent.com.json")));
+                new InputStreamReader(GMailer.class.getResourceAsStream("/client_secret_98348400237-hi1fou1uk7cc6r5j0lvereqebj6irlik.apps.googleusercontent.com.json")));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
@@ -56,7 +58,7 @@ public class GMailer {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    public void sendMail(String sendEmail, String subject, String message) throws Exception {
+    private void sendMail(String sendEmail, String subject, String message) throws Exception {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage email = new MimeMessage(session);
@@ -86,16 +88,13 @@ public class GMailer {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        new GMailer().sendMail("online.banking.applcation@gmail.com",
+    public void sendMessage(String email) throws Exception {
+        code = 1234;
+        new GMailer().sendMail(email,
                 "Forgot password code",
-                """
-                        Dear client,
-                                        
-                        Your core - 12345678.
-                                        
-                        Best regards,
-                        Online-banking
-                        """);
+                "Dear client,\n\n" +
+                        "Your core - " + code + ".\n\n" +
+                        "Best regards,\n" +
+                        "Online-banking\n");
     }
 }
