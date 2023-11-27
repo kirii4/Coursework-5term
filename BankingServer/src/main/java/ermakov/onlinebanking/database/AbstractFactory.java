@@ -5,4 +5,5 @@ public abstract class AbstractFactory {
     }
 
     public abstract SQLUsers getUsers();
+    public abstract SQLCategory getCategotyes();
 }

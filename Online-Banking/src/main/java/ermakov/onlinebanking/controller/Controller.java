@@ -1,5 +1,9 @@
 package ermakov.onlinebanking.controller;
 
+import ermakov.onlinebanking.model.Category;
+import ermakov.onlinebanking.model.Helper.TableUtil;
+import ermakov.onlinebanking.model.Helper.TreeUtil;
+import ermakov.onlinebanking.model.Subcategory;
 import ermakov.onlinebanking.model.User;
 import ermakov.onlinebanking.model.client.Client;
 import ermakov.onlinebanking.view.Authorization.Authorization;
@@ -14,6 +18,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -302,6 +309,19 @@ public class Controller implements ActionListener {
             }
         }
 
+        if (e.getActionCommand().equals("exitUser")) {
+            client.sendMessage("exit");
+            try {
+                if (client.readMessage().equals("OK")) {
+                    client.close();
+                    objUsersForm.dispose();
+                    System.exit(0);
+                }
+            }
+            catch(IOException ex){
+                System.out.println("Error in reading");
+            }
+        }
     }
 
     public void autorization() {
@@ -326,6 +346,9 @@ public class Controller implements ActionListener {
                     break;
                 case "ok":
                     String status = this.client.readMessage();
+                    this.client.sendMessage("getPayments");
+                    Object receivedObject = this.client.readObject();
+                    Map<Category, List<Subcategory>> category = (Map<Category, List<Subcategory>>) receivedObject;
                     if (status.equals("admin")) {
                         this.objAuthorization.setVisible(false);
                         Form form = new Form();
@@ -339,8 +362,13 @@ public class Controller implements ActionListener {
                         item.addActionListener(getInstance());
                         menu.add(item);
                         form.setJMenuBar(menu);
+                        TreeUtil.fillTree(form.getTreePayments(), category);
+                        TreeUtil.fillTree(form.getTreeEditPayments(), category);
+                        this.client.sendMessage("getUsers");
+                        Object receivedUsers = this.client.readObject();
+                        ArrayList<User> users = (ArrayList<User>) receivedUsers;
+                        TableUtil.populateTable(form.getTableUsers(), users);
                     }
-
                     if (status.equals("casher")) {
                         this.objAuthorization.setVisible(false);
                         FormCasher formCasher = new FormCasher();
@@ -362,19 +390,18 @@ public class Controller implements ActionListener {
                     if (status.equals("user")) {
                         this.objAuthorization.setVisible(false);
                         UsersForm usersForm = new UsersForm();
-                        //this.client.sendMessage("getInfAboutPassenger");
-                        //this.client.sendObject(user);
-                        //User infUser = (User)this.client.readObject();
-                        User infUser = new User();
-                        usersForm.getName_tf().setText(infUser.getName());
-                        usersForm.getSecondName_tf().setText(infUser.getSecondName());
-                        usersForm.getPatronymic_tf().setText(infUser.getPatronymic());
-                        usersForm.getSeries_tf().setText(infUser.getPassportSeries());
-                        usersForm.getNumber_tf().setText("" + infUser.getPassportNumber());
+                        this.client.sendMessage("getInfAboutUser");
+                        this.client.sendObject(user);
+                        User infUser = (User)this.client.readObject();
+                        usersForm.getAccountName().setText(infUser.getName());
+                        usersForm.getAccountSurname().setText(infUser.getSecondName());
+                        usersForm.getAccountPatronymic().setText(infUser.getPatronymic());
+                        usersForm.getAccountNumberCard().setText(infUser.getPatronymic());
                         usersForm.setTitle("Меню пользователя");
                         usersForm.pack();
                         usersForm.setLocationRelativeTo(null);
                         usersForm.setVisible(true);
+                        TreeUtil.fillTree(usersForm.getTreePayments(), category);
                     }
             }
         } catch (IOException var12) {

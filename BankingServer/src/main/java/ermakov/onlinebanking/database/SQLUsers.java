@@ -20,7 +20,6 @@ public class SQLUsers implements IUsers {
         if (instance == null) {
             instance = new SQLUsers();
         }
-
         return instance;
     }
 
@@ -59,12 +58,12 @@ public class SQLUsers implements IUsers {
         while(var5.hasNext()) {
             String[] items = (String[])var5.next();
             user.setIdUser(Integer.parseInt(items[0]));
-            user.setEmail(items[5]);
-            user.setName(items[7]);
-            user.setSecondName(items[8]);
-            user.setPatronymic(items[9]);
-            user.setPassportSeries(items[10]);
-            user.setPassportNumber(Integer.parseInt(items[11]));
+            user.setEmail(items[4]);
+            user.setName(items[5]);
+            user.setSecondName(items[6]);
+            user.setPatronymic(items[7]);
+            user.setPassportSeries(items[8]);
+            user.setPassportNumber(Integer.parseInt(items[9]));
         }
         return user;
     }
@@ -101,6 +100,28 @@ public class SQLUsers implements IUsers {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public ArrayList<User> selectAllUsers() {
+        String str = "SELECT * FROM users";
+        ArrayList<String[]> result = this.dbConnection.getArrayResult(str);
+        ArrayList<User> userList = new ArrayList<>();
+
+        for (String[] items : result) {
+            User user = new User();
+            user.setIdUser(Integer.parseInt(items[0]));
+            user.setLogin(items[1]);
+            user.setPassword(items[2]);
+            user.setStatus(items[3]);
+            user.setEmail(items[4]);
+            user.setName(items[5]);
+            user.setSecondName(items[6]);
+            user.setPatronymic(items[7]);
+            user.setPassportSeries(items[8]);
+            user.setPassportNumber(Integer.parseInt(items[9]));
+            userList.add(user);
+        }
+        return userList;
     }
 }
 

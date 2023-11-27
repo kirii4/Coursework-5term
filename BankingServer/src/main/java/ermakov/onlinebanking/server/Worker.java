@@ -1,7 +1,10 @@
 package ermakov.onlinebanking.server;
 
+import ermakov.onlinebanking.database.SQLCategory;
 import ermakov.onlinebanking.database.SQLFactory;
 import ermakov.onlinebanking.gmail.GMailer;
+import ermakov.onlinebanking.model.Category;
+import ermakov.onlinebanking.model.Subcategory;
 import ermakov.onlinebanking.model.User;
 import org.w3c.dom.ls.LSOutput;
 
@@ -9,6 +12,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static ermakov.onlinebanking.gmail.GMailer.*;
 
@@ -54,12 +60,6 @@ public class Worker implements Runnable {
                             soos.writeObject("This user is already existed");
                         }
                     }break;
-                    case "exit": {
-                        this.soos.writeObject("OK");
-                        this.soos.close();
-                        this.sois.close();
-                        System.out.println("Client " + this.clientSocket.getInetAddress().toString() + "disconnected.");
-                    }break;
                     case "forgotPassword": {
                         System.out.println("Запрос к БД на проверку почты пользователя(таблица User), клиент: " + clientSocket.getInetAddress().toString());
                         email = (String) sois.readObject();
@@ -89,6 +89,31 @@ public class Worker implements Runnable {
                         } else {
                             soos.writeObject("Error");
                         }
+                    }break;
+                    case "getInfAboutUser":{
+                        System.out.println("Запрос к БД на получение информации о пользователе(таблица User), клиент: " + clientSocket.getInetAddress().toString());
+                        SQLFactory sqlFactory = new SQLFactory();
+                        User user = (User)sois.readObject();
+                        User newUser = sqlFactory.getUsers().selectUsers(user);
+                        soos.writeObject(newUser);
+                    }break;
+                    case "getPayments":{
+                        System.out.println("Запрос к БД на получение информации о платежах(таблица Category), клиент: " + clientSocket.getInetAddress().toString());
+                        SQLFactory sqlFactory = new SQLFactory();
+                        Map<Category, List<Subcategory>> category = sqlFactory.getCategotyes().getCategotyes();
+                        soos.writeObject(category);
+                    }break;
+                    case "getUsers":{
+                        System.out.println("Запрос к БД на получение информации о пользователях(таблица User), клиент: " + clientSocket.getInetAddress().toString());
+                        SQLFactory sqlFactory = new SQLFactory();
+                        ArrayList<User> users = sqlFactory.getUsers().selectAllUsers();
+                        soos.writeObject(users);
+                    }break;
+                    case "exit": {
+                        this.soos.writeObject("OK");
+                        this.soos.close();
+                        this.sois.close();
+                        System.out.println("Client " + this.clientSocket.getInetAddress().toString() + "disconnected.");
                     }break;
                 }
             }

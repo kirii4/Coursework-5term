@@ -8,8 +8,7 @@ public class UsersForm extends JFrame{
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
     private JButton buttonShow;
-    private JScrollPane scrollPane;
-    private JButton buttonOrder;
+    private JButton buttonPayment;
     private JTextField secondName_tf;
     private JTextField name_tf;
     private JTextField patronymic_tf;
@@ -20,8 +19,14 @@ public class UsersForm extends JFrame{
     private JScrollPane scrollPaneTicket;
     private JComboBox to_cb;
     private JComboBox from_cb;
+
+    private JTextField accountSurname;
+    private JTextField accountName;
+    private JTextField accountPatronymic;
+    private JTextField accountNumberCard;
     private JTable tableTicket;
     private JTable tableSchedule;
+    private JTree treePayments;
 
     public UsersForm() {
         setContentPane(contentPane);
@@ -31,8 +36,8 @@ public class UsersForm extends JFrame{
         Controller.getInstance().initialize(this);
         buttonShow.setActionCommand("showUserSchedule");
         buttonShow.addActionListener(Controller.getInstance());
-        buttonOrder.setActionCommand("orderTicket");
-        buttonOrder.addActionListener(Controller.getInstance());
+        buttonPayment.setActionCommand("orderTicket");
+        buttonPayment.addActionListener(Controller.getInstance());
         buttonExit.setActionCommand("exitUser");
         buttonExit.addActionListener(Controller.getInstance());
     }
@@ -76,4 +81,24 @@ public class UsersForm extends JFrame{
     public JTable getTableSchedule() {
         return tableSchedule;
     }
+    public JTree getTreePayments() {
+        return treePayments;
+    }
+
+    public JTextField getAccountSurname() {
+        return accountSurname;
+    }
+
+    public JTextField getAccountName() {
+        return accountName;
+    }
+
+    public JTextField getAccountPatronymic() {
+        return accountPatronymic;
+    }
+
+    public JTextField getAccountNumberCard() {
+        return accountNumberCard;
+    }
+
 }

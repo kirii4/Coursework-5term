@@ -11,14 +11,11 @@ public class Form extends JFrame{
     private JButton buttonShowSchedule;
     private JButton buttonEdit;
     private JButton buttonCreate;
-    private JPanel panelTable;
-    private JPanel panelChange;//экспериментальная
-    private JScrollPane scrollPane;
+    private JPanel panelChange;
     private JButton buttonDelete;
     private JScrollPane scrollPanePassenger;
     private JButton buttonAdd;
     private JButton buttonDeletePlane;
-    private JScrollPane scrollPanePlane;
     private JTable tableSchedule;
     private JTable tablePassenger;
     private JTable tablePlane;
@@ -26,9 +23,13 @@ public class Form extends JFrame{
     private JComboBox from_cb;
     private JComboBox to_cb;
     private JComboBox boardNumber_cb;
-    private JComboBox flight_cb;
+    private JComboBox payments_cb;
     private JButton buttonDoText;
+    private JTree treePayments;
 
+    private JTree treeEditPayments;
+
+    private JTable tableUsers;
 
     public Form(){
         setContentPane(contentPane);
@@ -44,10 +45,6 @@ public class Form extends JFrame{
         buttonDelete.addActionListener(Controller.getInstance());
         buttonEdit.setActionCommand("editSchedule");
         buttonEdit.addActionListener(Controller.getInstance());
-        buttonAdd.setActionCommand("addPlaneShowPanel");
-        buttonAdd.addActionListener(Controller.getInstance());
-        buttonDeletePlane.setActionCommand("deletePlane");
-        buttonDeletePlane.addActionListener(Controller.getInstance());
         buttonDoText.setActionCommand("doText");
         buttonDoText.addActionListener(Controller.getInstance());
     }
@@ -81,6 +78,19 @@ public class Form extends JFrame{
     }
 
     public JComboBox getFlight_cb() {
-        return flight_cb;
+        return payments_cb;
     }
+
+    public JTree getTreePayments() {
+        return treePayments;
+    }
+
+    public JTree getTreeEditPayments() {
+        return treeEditPayments;
+    }
+
+    public JTable getTableUsers() {
+        return tableUsers;
+    }
+
 }
