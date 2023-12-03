@@ -11,4 +11,8 @@ public class SQLFactory extends AbstractFactory {
     public SQLCategory getCategotyes() {
         return SQLCategory.getInstance();
     }
+
+    public SQLTransaction getTransactions() {
+        return SQLTransaction.getInstance();
+    }
 }

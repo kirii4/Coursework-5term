@@ -9,23 +9,14 @@ public class UsersForm extends JFrame{
     private JTabbedPane tabbedPane1;
     private JButton buttonShow;
     private JButton buttonPayment;
-    private JTextField secondName_tf;
-    private JTextField name_tf;
-    private JTextField patronymic_tf;
-    private JTextField series_tf;
-    private JTextField number_tf;
-    private JComboBox flight_cb;
     private JButton buttonExit;
-    private JScrollPane scrollPaneTicket;
-    private JComboBox to_cb;
-    private JComboBox from_cb;
-
     private JTextField accountSurname;
     private JTextField accountName;
+    private JComboBox to_cb;
+    private JComboBox from_cb;
+    private JScrollPane scrollPaneTicket;
     private JTextField accountPatronymic;
     private JTextField accountNumberCard;
-    private JTable tableTicket;
-    private JTable tableSchedule;
     private JTree treePayments;
 
     public UsersForm() {
@@ -36,50 +27,10 @@ public class UsersForm extends JFrame{
         Controller.getInstance().initialize(this);
         buttonShow.setActionCommand("showUserSchedule");
         buttonShow.addActionListener(Controller.getInstance());
-        buttonPayment.setActionCommand("orderTicket");
+        buttonPayment.setActionCommand("userPayment");
         buttonPayment.addActionListener(Controller.getInstance());
         buttonExit.setActionCommand("exitUser");
         buttonExit.addActionListener(Controller.getInstance());
-    }
-
-    public JTextField getSecondName_tf() {
-        return secondName_tf;
-    }
-
-    public JTextField getName_tf() {
-        return name_tf;
-    }
-
-    public JTextField getPatronymic_tf() {
-        return patronymic_tf;
-    }
-
-    public JTextField getSeries_tf() {
-        return series_tf;
-    }
-
-    public JTextField getNumber_tf() {
-        return number_tf;
-    }
-
-    public JComboBox getFlight_cb() {
-        return flight_cb;
-    }
-
-    public JComboBox getFrom_cb() {
-        return from_cb;
-    }
-
-    public JComboBox getTo_cb() {
-        return to_cb;
-    }
-
-    public JTable getTableTicket() {
-        return tableTicket;
-    }
-
-    public JTable getTableSchedule() {
-        return tableSchedule;
     }
     public JTree getTreePayments() {
         return treePayments;

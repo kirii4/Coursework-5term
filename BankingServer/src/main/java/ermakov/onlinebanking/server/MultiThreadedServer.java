@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MultiThreadedServer implements Runnable {
-    protected int serverPort = 9006;
+    protected int serverPort = 5000;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
 
@@ -22,13 +22,13 @@ public class MultiThreadedServer implements Runnable {
 
             try {
                 clientSocket = this.serverSocket.accept();
-            } catch (IOException var3) {
+            } catch (IOException socketException) {
                 if (this.isStopped()) {
                     System.out.println("Server Stopped.");
                     return;
                 }
 
-                throw new RuntimeException("Error accepting client connection", var3);
+                throw new RuntimeException("Error accepting client connection", socketException);
             }
         }
 
@@ -44,8 +44,8 @@ public class MultiThreadedServer implements Runnable {
 
         try {
             this.serverSocket.close();
-        } catch (IOException var2) {
-            throw new RuntimeException("Error closing server", var2);
+        } catch (IOException socketException) {
+            throw new RuntimeException("Error closing server", socketException);
         }
     }
 
@@ -54,8 +54,8 @@ public class MultiThreadedServer implements Runnable {
 
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
-        } catch (IOException var2) {
-            throw new RuntimeException("Cannot open port " + this.serverPort, var2);
+        } catch (IOException socketException) {
+            throw new RuntimeException("Cannot open port " + this.serverPort, socketException);
         }
     }
 }

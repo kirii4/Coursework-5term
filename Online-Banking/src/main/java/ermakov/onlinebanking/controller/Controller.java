@@ -3,6 +3,7 @@ package ermakov.onlinebanking.controller;
 import ermakov.onlinebanking.model.Category;
 import ermakov.onlinebanking.model.Helper.TableUtil;
 import ermakov.onlinebanking.model.Helper.TreeUtil;
+import ermakov.onlinebanking.model.Payment;
 import ermakov.onlinebanking.model.Subcategory;
 import ermakov.onlinebanking.model.User;
 import ermakov.onlinebanking.model.client.Client;
@@ -10,24 +11,27 @@ import ermakov.onlinebanking.view.Authorization.Authorization;
 import ermakov.onlinebanking.view.ForgotPassword.ForgotPassword;
 import ermakov.onlinebanking.view.Form.Form;
 import ermakov.onlinebanking.view.FormCasher.FormCasher;
+import ermakov.onlinebanking.view.PaymentCasherForm.PaymentCasherForm;
+import ermakov.onlinebanking.view.PaymentForm.PaymentForm;
 import ermakov.onlinebanking.view.Registration.RegistrationUsers;
 import ermakov.onlinebanking.view.UsersForm.UsersForm;
 import ermakov.onlinebanking.view.ResetPassword.ResetPassword;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.BorderFactory;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 
 public class Controller implements ActionListener {
     private static Controller instance;
@@ -36,8 +40,16 @@ public class Controller implements ActionListener {
     private UsersForm objUsersForm;
     private Form objForm;
     private FormCasher objFormCasher;
+    private PaymentForm objPaymentForm;
+    private PaymentCasherForm objPaymentCasherForm;
     private ForgotPassword objForgotPassword;
     private ResetPassword objResetPassword;
+
+    String msgLogin = new String();
+    String role = new String();
+    Map<Category, List<Subcategory>> category = new HashMap<>();
+    User infUser = new User();
+    String cardNumber = null;
     private final Client client = new Client("127.0.0.2", "5000");
 
     private Controller() {
@@ -54,28 +66,29 @@ public class Controller implements ActionListener {
     public void initialize(Authorization obj) {
         this.objAuthorization = obj;
     }
-
     public void initialize(RegistrationUsers obj) {
         this.objRegistrarionUsers = obj;
     }
-
     public void initialize(UsersForm obj) {
         this.objUsersForm = obj;
     }
-
     public void initialize(FormCasher obj) {
         this.objFormCasher = obj;
     }
-
     public void initialize(Form obj) {
         this.objForm = obj;
     }
-
     public void initialize(ForgotPassword obj) {
         this.objForgotPassword = obj;
     }
     public void initialize(ResetPassword obj) {
         this.objResetPassword = obj;
+    }
+    public void initialize(PaymentForm obj) {
+        this.objPaymentForm = obj;
+    }
+    public void initialize(PaymentCasherForm obj) {
+        this.objPaymentCasherForm = obj;
     }
 
     @Override
@@ -136,7 +149,7 @@ public class Controller implements ActionListener {
                 if (!matcher.matches()) {
                     throw new IllegalArgumentException();
                 }
-            } catch (IllegalArgumentException var10) {
+            } catch (IllegalArgumentException RegexEmailException) {
                 this.objForgotPassword.getTextEmail().setBorder(BorderFactory.createLineBorder(Color.red));
                 this.objForgotPassword.getTextLabel().setText("Некорректный адрес электронной почты!");
                 return;
@@ -148,7 +161,7 @@ public class Controller implements ActionListener {
 
             try {
                 mes = this.client.readMessage();
-            } catch (IOException var8) {
+            } catch (IOException ServerException) {
                 System.out.println("Error in reading");
             }
 
@@ -165,7 +178,7 @@ public class Controller implements ActionListener {
                 if (this.objForgotPassword.getTextCode().getText().isEmpty()) {
                     throw new IllegalArgumentException();
                 }
-            } catch (IllegalArgumentException var10) {
+            } catch (IllegalArgumentException CodeException) {
                 this.objForgotPassword.getTextCode().setBorder(BorderFactory.createLineBorder(Color.red));
                 this.objForgotPassword.getTextLabel().setText("Некорректный код!");
                 return;
@@ -208,10 +221,10 @@ public class Controller implements ActionListener {
                     this.client.sendMessage("resetPassword");
                     this.client.sendMessage(this.objResetPassword.getTextPassword().getText());
                 }
-            } catch (IllegalArgumentException var11) {
+            } catch (IllegalArgumentException ResetPasswordException) {
                 this.objResetPassword.getTextPassword().setBorder(BorderFactory.createLineBorder(Color.red));
                 this.objResetPassword.getTextSecondPassword().setBorder(BorderFactory.createLineBorder(Color.red));
-                this.objResetPassword.getTextLabel().setText(var11.getMessage());
+                this.objResetPassword.getTextLabel().setText(ResetPasswordException.getMessage());
                 return;
             }
 
@@ -255,7 +268,7 @@ public class Controller implements ActionListener {
 
                 try {
                     user.setPassportNumber(Integer.parseInt(this.objRegistrarionUsers.getPassportNumber_tf().getText()));
-                } catch (NumberFormatException var9) {
+                } catch (NumberFormatException FormatException) {
                     this.objRegistrarionUsers.getPassportNumber_tf().setBorder(BorderFactory.createLineBorder(Color.red));
                     JOptionPane.showMessageDialog(this.objRegistrarionUsers, "Поле должно быть целым числом", "Ошибка ввода", 0);
                     ++error;
@@ -270,7 +283,7 @@ public class Controller implements ActionListener {
                     if (!matcher.matches()) {
                         throw new IllegalArgumentException("Некорректный адрес электронной почты");
                     }
-                } catch (IllegalArgumentException var10) {
+                } catch (IllegalArgumentException RegexException) {
                     this.objRegistrarionUsers.getTextEmail().setBorder(BorderFactory.createLineBorder(Color.red));
                     JOptionPane.showMessageDialog(this.objRegistrarionUsers, "Некорректный адрес электронной почты", "Ошибка ввода", 0);
                     ++error;
@@ -288,7 +301,7 @@ public class Controller implements ActionListener {
 
                     try {
                         mes = this.client.readMessage();
-                    } catch (IOException var8) {
+                    } catch (IOException ServerException) {
                         System.out.println("Error in reading");
                     }
 
@@ -309,6 +322,311 @@ public class Controller implements ActionListener {
             }
         }
 
+        if (e.getActionCommand().equals("editUser")) {
+            JTable tableUsers = objForm.getTableUsers();
+            int selectedRow = tableUsers.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectedColumn = tableUsers.getSelectedColumn();
+                String[] options;
+                if (selectedColumn == 0) {
+                    options = new String[]{"Почта"};
+                } else if (selectedColumn == 1) {
+                    options = new String[]{"Логин"};
+                } else if (selectedColumn == 3) {
+                    options = new String[]{"Роль"};
+                } else {
+                    JOptionPane.showMessageDialog(null, "Данный столбик нельзя редактировать.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int result = JOptionPane.showOptionDialog(null, "Выберите тип редактирования:", "Редактирование пользователя",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                if (result != JOptionPane.CLOSED_OPTION) {
+                    String newValue = JOptionPane.showInputDialog(null, "Введите новое значение:", "Редактирование значения",
+                            JOptionPane.PLAIN_MESSAGE);
+                    if (newValue != null && !newValue.trim().isEmpty()) {
+                        this.client.sendMessage("editUser");
+                        this.client.sendObject(tableUsers.getValueAt(selectedRow, 0));
+                        this.client.sendMessage(options[0]);
+                        this.client.sendMessage(newValue);
+                        String mes = "";
+                        try {
+                            mes = this.client.readMessage();
+                        } catch (IOException ServerException) {
+                            System.out.println("Error in reading");
+                        }
+                        if (Objects.equals(mes, "OK")){
+                            JOptionPane.showMessageDialog(null, "Успешно добавлено!");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Ошибка при добавлении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        }
+                        tableUsers.setValueAt(newValue, selectedRow, selectedColumn);;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Введите корректное значение.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        }
+
+        if (e.getActionCommand().equals("deleteUser")) {
+            JTable tableUsers = objForm.getTableUsers();
+            int selectedRow = tableUsers.getSelectedRow();
+            if (selectedRow != -1) {
+                int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить выбранного пользователя?", "Подтверждение удаления", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    DefaultTableModel tableModel = (DefaultTableModel) tableUsers.getModel();
+                    String email = (String) tableModel.getValueAt(selectedRow, 0);
+                    if (!msgLogin.equals(tableModel.getValueAt(selectedRow, 1))) {
+                        tableModel.removeRow(selectedRow);
+                        this.client.sendMessage("deleteUser");
+                        this.client.sendObject(email);
+                        String mes = "";
+                        try {
+                            mes = this.client.readMessage();
+                        } catch (IOException ServerException) {
+                            System.out.println("Error in reading");
+                        }
+                        if (Objects.equals(mes, "OK")) {
+                            JOptionPane.showMessageDialog(null, "Успешно удалено!");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Ошибка при удалении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Вы не можете удалить сами себя.");
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Выберите пользователя для удаления.");
+            }
+        }
+
+        if (e.getActionCommand().equals("doReporting")) {
+
+        }
+
+        if (e.getActionCommand().equals("createPayment")) {
+            String[] options = {"Категория", "Подкатегория"};
+            int choice = JOptionPane.showOptionDialog(
+                    null,
+                    "Выберите тип добавления:",
+                    "Добавление элемента",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+            JTree treeEditPayments = objForm.getTreeEditPayments();
+            if (choice == 0) {
+                String categoryName = JOptionPane.showInputDialog(null, "Введите название категории:", "Добавление категории", JOptionPane.PLAIN_MESSAGE);
+                if (categoryName != null && !categoryName.trim().isEmpty()) {
+                    this.client.sendMessage("createPayment");
+                    this.client.sendObject(categoryName);
+                    this.client.sendObject("Категория");
+                    String mes = "";
+                    try {
+                        mes = this.client.readMessage();
+                    } catch (IOException ServerException) {
+                        System.out.println("Error in reading");
+                    }
+                    if (Objects.equals(mes, "OK")){
+                        JOptionPane.showMessageDialog(null, "Успешно добавлено!");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Ошибка при добавлении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }
+                    DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(categoryName);
+                    ((DefaultTreeModel) treeEditPayments.getModel()).insertNodeInto(categoryNode, (MutableTreeNode) treeEditPayments.getModel().getRoot(), treeEditPayments.getModel().getChildCount(treeEditPayments.getModel().getRoot()));
+                } else {
+                    JOptionPane.showMessageDialog(null, "Название категории не может быть пустым. Добавление отменено.");
+                }
+            } else if (choice == 1) {
+                TreePath selectedPath = treeEditPayments.getSelectionPath();
+
+                if (selectedPath != null) {
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+                    String selectedCategory = selectedNode.getUserObject().toString();
+                    String subcategoryName = JOptionPane.showInputDialog(null, "Введите название подкатегории:", "Добавление подкатегории", JOptionPane.PLAIN_MESSAGE);
+                    if (subcategoryName != null && !subcategoryName.trim().isEmpty()) {
+                        this.client.sendMessage("createPayment");
+                        this.client.sendObject(subcategoryName);
+                        this.client.sendObject("Подкатегория");
+                        this.client.sendObject(selectedCategory);
+                        String mes = "";
+                        try {
+                            mes = this.client.readMessage();
+                        } catch (IOException ServerException) {
+                            System.out.println("Error in reading");
+                        }
+                        if (Objects.equals(mes, "OK")){
+                            JOptionPane.showMessageDialog(null, "Успешно добавлено!");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Ошибка при добавлении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        }
+                        DefaultMutableTreeNode subcategoryNode = new DefaultMutableTreeNode(subcategoryName);
+                        ((DefaultTreeModel) treeEditPayments.getModel()).insertNodeInto(subcategoryNode, selectedNode, selectedNode.getChildCount());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Название подкатегории не может быть пустым. Добавление отменено.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Выберите категорию для добавления подкатегории.");
+                }
+            }
+        }
+
+        if (e.getActionCommand().equals("editPayment")) {
+            JTree treePayments = objForm.getTreeEditPayments();
+            TreePath selectedPath = treePayments.getSelectionPath();
+
+            if (selectedPath != null) {
+                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+
+                if (!selectedNode.isRoot()) {
+                    Object selectedObject = selectedNode.getUserObject();
+                    String currentName = selectedObject.toString();
+                    String newName = JOptionPane.showInputDialog(null, "Введите новое имя:", "Редактирование элемента", JOptionPane.PLAIN_MESSAGE);
+                    if (newName != null && !newName.trim().isEmpty()) {
+                        selectedNode.setUserObject(newName);
+                        DefaultTreeModel treeModel = (DefaultTreeModel) treePayments.getModel();
+                        treeModel.nodeChanged(selectedNode);
+                        this.client.sendMessage("editPayment");
+                        this.client.sendObject(currentName);
+                        this.client.sendObject(newName);
+                        String mes = "";
+                        try {
+                            mes = this.client.readMessage();
+                        } catch (IOException ServerException) {
+                            System.out.println("Error in reading");
+                        }
+                        if (Objects.equals(mes, "OK")){
+                            JOptionPane.showMessageDialog(null, "Успешно изменено!");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Ошибка при изменении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Имя не может быть пустым. Редактирование отменено.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Выберите элемент для редактирования, не являющийся корневым узлом.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Выберите элемент для редактирования.");
+            }
+        }
+
+        if (e.getActionCommand().equals("deletePayment")) {
+            JTree treePayments = objForm.getTreeEditPayments();
+            TreePath selectedPath = treePayments.getSelectionPath();
+            if (selectedPath != null) {
+                int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить выбранный элемент?", "Подтверждение удаления", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+                    if (!selectedNode.isRoot()) {
+                        DefaultTreeModel treeModel = (DefaultTreeModel) treePayments.getModel();
+                        TreePath parentPath = selectedPath.getParentPath();
+                        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
+                        if (parentNode != null) {
+                            parentNode.remove(selectedNode);
+                            Object selectedObject = selectedNode.getUserObject();
+                            this.client.sendMessage("deletePayment");
+                            this.client.sendObject(selectedObject);
+                            String mes = "";
+                            try {
+                                mes = this.client.readMessage();
+                            } catch (IOException ServerException) {
+                                System.out.println("Error in reading");
+                            }
+                            if (Objects.equals(mes, "OK")){
+                                JOptionPane.showMessageDialog(null, "Успешно удалено!");
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Ошибка при удалении.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            }
+                            treeModel.reload();
+                            treePayments.expandPath(parentPath);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Нельзя удалить корневой узел.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Выберите элемент для удаления, не являющийся корневым узлом.");
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Выберите элемент для удаления.");
+            }
+        }
+
+        if (e.getActionCommand().equals("casherPayment")) {
+            JTree treePayments = objFormCasher.getPaymentTree();
+            TreePath selectedPath = treePayments.getSelectionPath();
+            if (selectedPath != null) {
+                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+                if (selectedNode.isLeaf()) {
+                    this.objFormCasher.dispose();
+                    PaymentCasherForm formPayment = new PaymentCasherForm();
+                    Object selectedObject = selectedNode.getUserObject();
+                    formPayment.getPaymentType().setText((String) selectedObject);
+                    formPayment.setTitle("Оплата");
+                    formPayment.pack();
+                    formPayment.setLocationRelativeTo(null);
+                    formPayment.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Вы не можете оплатить раздел.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+
+        if (e.getActionCommand().equals("userPayment")) {
+            JTree treePayments = objUsersForm.getTreePayments();
+            TreePath selectedPath = treePayments.getSelectionPath();
+            if (selectedPath != null) {
+                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+                if (selectedNode.isLeaf()) {
+                    PaymentForm formPayment = new PaymentForm();
+                    formPayment.getCardBox().addItem(cardNumber);
+                    this.objUsersForm.dispose();
+                    Object selectedObject = selectedNode.getUserObject();
+                    formPayment.getPaymentType().setText((String) selectedObject);
+                    formPayment.setTitle("Оплата");
+                    formPayment.pack();
+                    formPayment.setLocationRelativeTo(null);
+                    formPayment.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Вы не можете оплатить раздел.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+
+        if (e.getActionCommand().equals("backToClientForm")) {
+            if (role.equals("casher")){
+                this.objPaymentForm.setVisible(false);
+                FormCasher formCasher = new FormCasher();
+                formCasher.setTitle("Меню кассира");
+                formCasher.pack();
+                formCasher.setLocationRelativeTo(null);
+                formCasher.setVisible(true);
+                JMenuBar menu = new JMenuBar();
+                JMenu item = new JMenu("Выход");
+                menu.add(item);
+                formCasher.setJMenuBar(menu);
+                TreeUtil.fillTree(formCasher.getPaymentTree(), category);
+            }else if(role.equals("user")){
+                this.objPaymentForm.setVisible(false);
+                UsersForm usersForm = new UsersForm();
+                usersForm.getAccountName().setText(infUser.getName());
+                usersForm.getAccountSurname().setText(infUser.getSecondName());
+                usersForm.getAccountPatronymic().setText(infUser.getPatronymic());
+                usersForm.getAccountNumberCard().setText(infUser.getPatronymic());
+                usersForm.setTitle("Меню пользователя");
+                usersForm.pack();
+                usersForm.setLocationRelativeTo(null);
+                usersForm.setVisible(true);
+                TreeUtil.fillTree(usersForm.getTreePayments(), category);
+                usersForm.getAccountNumberCard().setText(cardNumber);
+            }
+        }
+
+        if (e.getActionCommand().equals("doPayment")){
+
+        }
+
         if (e.getActionCommand().equals("exitUser")) {
             client.sendMessage("exit");
             try {
@@ -326,12 +644,11 @@ public class Controller implements ActionListener {
 
     public void autorization() {
         try {
-            String msgLogin = this.objAuthorization.getTextLogin().getText();
+            msgLogin = this.objAuthorization.getTextLogin().getText();
             String msgPassword = this.objAuthorization.getPasswordField1().getText();
             if (msgLogin.equals("") || msgPassword.equals("")) {
                 JOptionPane.showMessageDialog(this.objAuthorization, "Заполните все поля!", "Ошибка ввода", 0);
             }
-
             User user = new User();
             user.setLogin(msgLogin);
             user.setPassword(msgPassword);
@@ -346,9 +663,10 @@ public class Controller implements ActionListener {
                     break;
                 case "ok":
                     String status = this.client.readMessage();
+                    role = status;
                     this.client.sendMessage("getPayments");
                     Object receivedObject = this.client.readObject();
-                    Map<Category, List<Subcategory>> category = (Map<Category, List<Subcategory>>) receivedObject;
+                    category = (Map<Category, List<Subcategory>>) receivedObject;
                     if (status.equals("admin")) {
                         this.objAuthorization.setVisible(false);
                         Form form = new Form();
@@ -372,11 +690,6 @@ public class Controller implements ActionListener {
                     if (status.equals("casher")) {
                         this.objAuthorization.setVisible(false);
                         FormCasher formCasher = new FormCasher();
-                        //this.client.sendMessage("getNumberOfTicket");
-                        //int numberOfTicket = (Integer)this.client.readObject();
-                        int numberOfTicket = 0;
-                        formCasher.getNumberTicket_tf().setText("" + numberOfTicket);
-                        formCasher.getNumberTicket_tf().setEnabled(false);
                         formCasher.setTitle("Меню кассира");
                         formCasher.pack();
                         formCasher.setLocationRelativeTo(null);
@@ -385,6 +698,7 @@ public class Controller implements ActionListener {
                         JMenu item = new JMenu("Выход");
                         menu.add(item);
                         formCasher.setJMenuBar(menu);
+                        TreeUtil.fillTree(formCasher.getPaymentTree(), category);
                     }
 
                     if (status.equals("user")) {
@@ -392,7 +706,8 @@ public class Controller implements ActionListener {
                         UsersForm usersForm = new UsersForm();
                         this.client.sendMessage("getInfAboutUser");
                         this.client.sendObject(user);
-                        User infUser = (User)this.client.readObject();
+                        infUser = (User)this.client.readObject();
+                        cardNumber = (String)this.client.readObject();
                         usersForm.getAccountName().setText(infUser.getName());
                         usersForm.getAccountSurname().setText(infUser.getSecondName());
                         usersForm.getAccountPatronymic().setText(infUser.getPatronymic());
@@ -402,10 +717,16 @@ public class Controller implements ActionListener {
                         usersForm.setLocationRelativeTo(null);
                         usersForm.setVisible(true);
                         TreeUtil.fillTree(usersForm.getTreePayments(), category);
+                        String block1 = cardNumber.substring(0, 4);
+                        String block2 = cardNumber.substring(4, 8);
+                        String block3 = cardNumber.substring(8, 12);
+                        String block4 = cardNumber.substring(12);
+                        cardNumber = String.format("%s %s %s %s", block1, block2, block3, block4);
+                        usersForm.getAccountNumberCard().setText(cardNumber);
                     }
             }
-        } catch (IOException var12) {
-            var12.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
     }

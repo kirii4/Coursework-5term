@@ -24,5 +24,6 @@ public class TableUtil {
             tableModel.addRow(rowData);
         }
         table.setModel(tableModel);
+        table.getTableHeader().setReorderingAllowed(false);
     }
 }

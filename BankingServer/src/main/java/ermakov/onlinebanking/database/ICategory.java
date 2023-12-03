@@ -7,5 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface ICategory {
-    public abstract Map<Category, List<Subcategory>> getCategotyes();
+    Map<Category, List<Subcategory>> getCategotyes();
+    boolean deleteCategoryOrSubcategory(String name);
+    boolean editCategoryOrSubcategory(String oldName, String newName);
+    boolean createCategory(String name);
+    boolean createSubcategory(String name, String category);
 }

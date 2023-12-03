@@ -15,17 +15,17 @@ public class ConnectionDB {
             Class.forName("org.postgresql.Driver");
             this.connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Online-banking", "postgres", "150720");
             this.statement = this.connect.createStatement();
-        } catch (ClassNotFoundException | SQLException var2) {
+        } catch (ClassNotFoundException | SQLException SQLException) {
             System.out.println("Problem with JDBC Driver");
-            var2.printStackTrace();
+            SQLException.printStackTrace();
         }
     }
 
     public void setResultSet(String str) {
         try {
             this.resultSet = this.statement.executeQuery(str);
-        } catch (SQLException var3) {
-            var3.printStackTrace();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
 
     }
@@ -33,8 +33,8 @@ public class ConnectionDB {
     public void execute(String query) {
         try {
             this.statement.execute(query);
-        } catch (SQLException var3) {
-            var3.printStackTrace();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
 
     }
@@ -63,8 +63,8 @@ public class ConnectionDB {
 
                 this.masResult.add(arrayString);
             }
-        } catch (SQLException var5) {
-            var5.printStackTrace();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
 
         return this.masResult;
@@ -73,8 +73,8 @@ public class ConnectionDB {
     public void close() {
         try {
             this.connect.close();
-        } catch (SQLException var2) {
-            System.out.println(var2.getMessage());
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
         }
     }
     public Connection getConnection() {

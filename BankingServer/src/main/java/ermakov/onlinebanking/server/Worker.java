@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static ermakov.onlinebanking.gmail.GMailer.*;
 
@@ -41,7 +42,7 @@ public class Worker implements Runnable {
                         User user = (User)sois.readObject();
                         SQLFactory sqlFactory = new SQLFactory();
                         String status = sqlFactory.getUsers().findUser(user);
-                        if (status == "" || sqlFactory.getUsers().isEmailExists(user.getEmail()))
+                        if (Objects.equals(status, "") || sqlFactory.getUsers().isEmailExists(user.getEmail()))
                             soos.writeObject("error");
                         else {
                             soos.writeObject("ok");
@@ -96,6 +97,8 @@ public class Worker implements Runnable {
                         User user = (User)sois.readObject();
                         User newUser = sqlFactory.getUsers().selectUsers(user);
                         soos.writeObject(newUser);
+                        String cardNumber = sqlFactory.getTransactions().getCardNumber(newUser.getIdUser());
+                        soos.writeObject(cardNumber);
                     }break;
                     case "getPayments":{
                         System.out.println("Запрос к БД на получение информации о платежах(таблица Category), клиент: " + clientSocket.getInetAddress().toString());
@@ -109,6 +112,75 @@ public class Worker implements Runnable {
                         ArrayList<User> users = sqlFactory.getUsers().selectAllUsers();
                         soos.writeObject(users);
                     }break;
+                    case "editUser":{
+                        System.out.println("Запрос к БД на изменение информации о пользователях(таблица User), клиент: " + clientSocket.getInetAddress().toString());
+                        String userEmail = (String) sois.readObject();
+                        String field = (String) sois.readObject();
+                        String newValue = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getUsers().editUser(userEmail, newValue, field)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("Error");
+                        }
+                    }break;
+                    case "deleteUser":{
+                        System.out.println("Запрос к БД на удаление информации о пользователях(таблица User), клиент: " + clientSocket.getInetAddress().toString());
+                        String userEmail = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getUsers().deleteUser(userEmail)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("Error");
+                        }
+                    }break;
+                    case "doReporting":{
+
+                    }break;
+                    case "createPayment":{
+                        System.out.println("Запрос к БД на добавление информации о платежах(таблицы Category, Subcategories), клиент: " + clientSocket.getInetAddress().toString());
+                        String name = (String) sois.readObject();
+                        String type = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (type.equals("Подкатегория")){
+                            String category = (String) sois.readObject();
+                            if (sqlFactory.getCategotyes().createSubcategory(name, category)) {
+                                soos.writeObject("OK");
+                            } else {
+                                soos.writeObject("Error");
+                            }
+                        }else {
+                            if (sqlFactory.getCategotyes().createCategory(name)) {
+                                soos.writeObject("OK");
+                            } else {
+                                soos.writeObject("Error");
+                            }
+                        }
+                    }break;
+                    case "editPayment":{
+                        System.out.println("Запрос к БД на изменение информации о платежах(таблицы Category, Subcategories), клиент: " + clientSocket.getInetAddress().toString());
+                        String oldName = (String) sois.readObject();
+                        String newName = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getCategotyes().editCategoryOrSubcategory(oldName, newName)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("Error");
+                        }
+                    }break;
+                    case "deletePayment":{
+                        System.out.println("Запрос к БД на удаление информации о платежах(таблицы Category, Subcategories), клиент: " + clientSocket.getInetAddress().toString());
+                        String name = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getCategotyes().deleteCategoryOrSubcategory(name)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("Error");
+                        }
+                    }break;
+                    case "doPayment":{
+
+                    }break;
                     case "exit": {
                         this.soos.writeObject("OK");
                         this.soos.close();
@@ -117,10 +189,11 @@ public class Worker implements Runnable {
                     }break;
                 }
             }
-        } catch (IOException var7) {
+        } catch (IOException serverException) {
+            serverException.printStackTrace();
             System.out.println("Client disconnected (" + this.clientSocket.getInetAddress().toString() + ").");
-        } catch (ClassNotFoundException var8) {
-            var8.printStackTrace();
+        } catch (ClassNotFoundException classNotFoundException) {
+            classNotFoundException.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

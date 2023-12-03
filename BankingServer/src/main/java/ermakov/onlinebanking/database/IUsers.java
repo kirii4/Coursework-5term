@@ -5,13 +5,12 @@ import ermakov.onlinebanking.model.User;
 import java.util.ArrayList;
 
 public interface IUsers {
-    String findUser(User var1);
-
+    String findUser(User user);
     ArrayList<User> selectAllUsers();
-
-    void insert(User var1);
-
-    User selectUsers(User var1);
-
+    void insert(User user);
+    User selectUsers(User user);
     boolean isEmailExists(String email);
+    boolean updatePassword(String email, String password);
+    boolean editUser(String email, String newValue, String type);
+    boolean deleteUser(String email);
 }
