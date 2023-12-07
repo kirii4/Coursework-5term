@@ -12,12 +12,12 @@ public class UsersForm extends JFrame{
     private JButton buttonExit;
     private JTextField accountSurname;
     private JTextField accountName;
-    private JComboBox to_cb;
-    private JComboBox from_cb;
     private JScrollPane scrollPaneTicket;
     private JTextField accountPatronymic;
     private JTextField accountNumberCard;
     private JTree treePayments;
+    private JTable paymentTable;
+    private JScrollPane Scroll;
 
     public UsersForm() {
         setContentPane(contentPane);
@@ -25,8 +25,6 @@ public class UsersForm extends JFrame{
         getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
 
         Controller.getInstance().initialize(this);
-        buttonShow.setActionCommand("showUserSchedule");
-        buttonShow.addActionListener(Controller.getInstance());
         buttonPayment.setActionCommand("userPayment");
         buttonPayment.addActionListener(Controller.getInstance());
         buttonExit.setActionCommand("exitUser");
@@ -51,5 +49,7 @@ public class UsersForm extends JFrame{
     public JTextField getAccountNumberCard() {
         return accountNumberCard;
     }
+
+    public JTable getPaymentTable(){ return paymentTable; }
 
 }

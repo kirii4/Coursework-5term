@@ -32,6 +32,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.sql.Date;
 
 public class Controller implements ActionListener {
     private static Controller instance;
@@ -623,8 +624,34 @@ public class Controller implements ActionListener {
             }
         }
 
-        if (e.getActionCommand().equals("doPayment")){
+        if (e.getActionCommand().equals("doPayment")) {
+            String paymentType = objPaymentForm.getPaymentType().getText();
+            double amount;
 
+            try {
+                amount = Double.parseDouble(objPaymentForm.getPaymentAmount().getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Некорректный формат суммы", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            long currentTimeMillis = System.currentTimeMillis();
+            Date date = new Date(currentTimeMillis);
+            String cardNumber = objPaymentForm.getCardBox().getSelectedItem().toString();
+
+            Payment payment = new Payment();
+            payment.setPaymentType(paymentType);
+            payment.setAmount(amount);
+            payment.setDate(date);
+            payment.setCardNumber(cardNumber);
+
+            this.client.sendObject("doPayment");
+            this.client.sendObject(payment);
+
+            objPaymentForm.getPaymentType().setText("");
+            objPaymentForm.getPaymentAmount().setText("");
+            objPaymentForm.getCardBox().setSelectedItem(null);
+
+            JOptionPane.showMessageDialog(null, "Оплата выполнена успешно");
         }
 
         if (e.getActionCommand().equals("exitUser")) {
@@ -685,7 +712,7 @@ public class Controller implements ActionListener {
                         this.client.sendMessage("getUsers");
                         Object receivedUsers = this.client.readObject();
                         ArrayList<User> users = (ArrayList<User>) receivedUsers;
-                        TableUtil.populateTable(form.getTableUsers(), users);
+                        TableUtil.populateUserTable(form.getTableUsers(), users);
                     }
                     if (status.equals("casher")) {
                         this.objAuthorization.setVisible(false);
@@ -712,6 +739,7 @@ public class Controller implements ActionListener {
                         usersForm.getAccountSurname().setText(infUser.getSecondName());
                         usersForm.getAccountPatronymic().setText(infUser.getPatronymic());
                         usersForm.getAccountNumberCard().setText(infUser.getPatronymic());
+                        infUser.getEmail();
                         usersForm.setTitle("Меню пользователя");
                         usersForm.pack();
                         usersForm.setLocationRelativeTo(null);
@@ -723,6 +751,11 @@ public class Controller implements ActionListener {
                         String block4 = cardNumber.substring(12);
                         cardNumber = String.format("%s %s %s %s", block1, block2, block3, block4);
                         usersForm.getAccountNumberCard().setText(cardNumber);
+                        this.client.sendMessage("getPaymentsUser");
+                        this.client.sendMessage(infUser.getEmail());
+                        Object receivedPayments = this.client.readObject();
+                        ArrayList<Payment> payments = (ArrayList<Payment>) receivedPayments;
+                        TableUtil.populatePaymentTable(usersForm.getPaymentTable(), payments);
                     }
             }
         } catch (IOException exception) {

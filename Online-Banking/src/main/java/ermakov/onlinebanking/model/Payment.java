@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
 
-public class Payment implements Serializable {
+    public class Payment implements Serializable {
     private int idPayment;
     private String paymentType;
     private double amount;
     private Date date;
     private String accountNumber;
+    private String cardNumber;
 
     public Payment() {
         this.idPayment = 0;
@@ -55,22 +56,36 @@ public class Payment implements Serializable {
         this.accountNumber = accountNumber;
     }
 
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (!(o instanceof Payment)) {
-            return false;
-        } else {
-            Payment payment = (Payment)o;
-            return this.getIdPayment() == payment.getIdPayment() && Double.compare(this.getAmount(), payment.getAmount()) == 0 && Objects.equals(this.getPaymentType(), payment.getPaymentType()) && Objects.equals(this.getDate(), payment.getDate()) && Objects.equals(this.getAccountNumber(), payment.getAccountNumber());
-        }
+        if (this == o) return true;
+        if (!(o instanceof Payment)) return false;
+        Payment payment = (Payment) o;
+        return getIdPayment() == payment.getIdPayment() && Double.compare(getAmount(), payment.getAmount()) == 0 && Objects.equals(getPaymentType(), payment.getPaymentType()) && Objects.equals(getDate(), payment.getDate()) && Objects.equals(getAccountNumber(), payment.getAccountNumber()) && Objects.equals(getCardNumber(), payment.getCardNumber());
     }
 
+    @Override
     public int hashCode() {
-        return Objects.hash(new Object[]{this.getIdPayment(), this.getPaymentType(), this.getAmount(), this.getDate(), this.getAccountNumber()});
+        return Objects.hash(getIdPayment(), getPaymentType(), getAmount(), getDate(), getAccountNumber(), getCardNumber());
     }
 
+    @Override
     public String toString() {
-        return "Payment{idPayment=" + this.idPayment + ", paymentType='" + this.paymentType + "', amount=" + this.amount + ", date=" + this.date + ", accountNumber='" + this.accountNumber + "'}";
+        return "Payment{" +
+                "idPayment=" + idPayment +
+                ", paymentType='" + paymentType + '\'' +
+                ", amount=" + amount +
+                ", date=" + date +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
+                '}';
     }
 }

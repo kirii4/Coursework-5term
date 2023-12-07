@@ -4,6 +4,7 @@ import ermakov.onlinebanking.database.SQLCategory;
 import ermakov.onlinebanking.database.SQLFactory;
 import ermakov.onlinebanking.gmail.GMailer;
 import ermakov.onlinebanking.model.Category;
+import ermakov.onlinebanking.model.Payment;
 import ermakov.onlinebanking.model.Subcategory;
 import ermakov.onlinebanking.model.User;
 import org.w3c.dom.ls.LSOutput;
@@ -179,7 +180,21 @@ public class Worker implements Runnable {
                         }
                     }break;
                     case "doPayment":{
-
+                        System.out.println("Запрос к БД на добавление платежа(таблица Payment), клиент: " + clientSocket.getInetAddress().toString());
+                        Payment payment = (Payment) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        if (sqlFactory.getTransactions().doPayment(payment)){
+                            soos.writeObject("OK");
+                        }else{
+                            soos.writeObject("Error");
+                        }
+                    }break;
+                    case "getPaymentsUser":{
+                        System.out.println("Запрос к БД на получение информации о платежах(таблица Payment), клиент: " + clientSocket.getInetAddress().toString());
+                        String userEmail = (String) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        ArrayList<Payment> payments = sqlFactory.getTransactions().selectUserPayments(userEmail);
+                        soos.writeObject(payments);
                     }break;
                     case "exit": {
                         this.soos.writeObject("OK");

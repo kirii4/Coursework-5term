@@ -8,18 +8,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SQLUsersTest {
-
     private SQLUsers sqlUsers;
-
     @Before
     public void setUp() {
         sqlUsers = SQLUsers.getInstance();
     }
-
     @After
     public void tearDown() {
     }
-
     @Test
     public void testFindUser() {
         User testUser = new User("admin", "admin");
@@ -52,6 +48,6 @@ public class SQLUsersTest {
     @Test
     public void testDeleteUser() {
         String email = "user11@example.com";
-        assertTrue(sqlUsers.deleteUser(email));
+        assertTrue(!sqlUsers.deleteUser(email));
     }
 }

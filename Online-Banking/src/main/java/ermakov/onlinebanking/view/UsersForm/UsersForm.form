@@ -29,75 +29,17 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="671c5" layout-manager="GridBagLayout">
-                    <constraints border-constraint="North"/>
-                    <properties>
-                      <preferredSize width="0" height="100"/>
-                    </properties>
-                    <border type="none"/>
-                    <children>
-                      <component id="81b2f" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                        <properties>
-                          <text value="Период с"/>
-                        </properties>
-                      </component>
-                      <hspacer id="35649">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                      </hspacer>
-                      <vspacer id="30b50">
-                        <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                      </vspacer>
-                      <component id="321b1" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                        <properties>
-                          <text value="По"/>
-                        </properties>
-                      </component>
-                      <component id="11d56" class="javax.swing.JComboBox" binding="to_cb">
-                        <constraints>
-                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                        <properties/>
-                      </component>
-                      <component id="9a028" class="javax.swing.JComboBox" binding="from_cb">
-                        <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                        <properties/>
-                      </component>
-                    </children>
-                  </grid>
-                  <grid id="33e1" layout-manager="GridBagLayout">
+                  <scrollpane id="5cac5" binding="Scroll">
                     <constraints border-constraint="Center"/>
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="12fa1" class="javax.swing.JButton" binding="buttonShow">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                          <gridbag weightx="0.0" weighty="0.0"/>
-                        </constraints>
-                        <properties>
-                          <text value="Показать"/>
-                        </properties>
+                      <component id="9ac18" class="javax.swing.JTable" binding="paymentTable">
+                        <constraints/>
+                        <properties/>
                       </component>
                     </children>
-                  </grid>
+                  </scrollpane>
                 </children>
               </grid>
               <grid id="297ac" layout-manager="BorderLayout" hgap="0" vgap="0">
